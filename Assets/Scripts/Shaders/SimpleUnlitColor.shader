@@ -2,6 +2,7 @@ Shader "Examples/SimpleUnlitColor"
 {
     Properties
     {
+       _Color ("Main Color", Color) = (0.996, 0.712, 0.110, 1)
     }
     
     SubShader
@@ -17,6 +18,7 @@ Shader "Examples/SimpleUnlitColor"
 
             float4x4 unity_MatrixVP;
             float4x4 unity_ObjectToWorld;
+            float4 _Color;
 
             struct Attributes
             {
@@ -38,7 +40,7 @@ Shader "Examples/SimpleUnlitColor"
 
             float4 frag(Varyings input) : SV_Target
             {
-                return float4(0.5, 1, 0.5, 1);
+                return _Color;
             }
             
             ENDHLSL
