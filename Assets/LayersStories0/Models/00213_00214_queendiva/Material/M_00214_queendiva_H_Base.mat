@@ -1,0 +1,163 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 6
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_Name: M_00214_queendiva_H_Base
+  m_Shader: {fileID: 4800000, guid: c134ace2b95631e4ba69d820e53b11d6, type: 3}
+  m_ShaderKeywords: 
+  m_LightmapFlags: 5
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  m_SavedProperties:
+    serializedVersion: 2
+    m_TexEnvs:
+    - first:
+        name: _Emissive_MSK
+      second:
+        m_Texture: {fileID: 2800000, guid: 6b83c65aa08c9b84ab8ce1aad2c07cf8, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - first:
+        name: _Gradation
+      second:
+        m_Texture: {fileID: 2800000, guid: 34964675953549a41bffbe472f9b347f, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - first:
+        name: _MatrixTex
+      second:
+        m_Texture: {fileID: 2800000, guid: 85c0ae3f3865845aeae4a9aca6915d4e, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - first:
+        name: _TEX_Eyes
+      second:
+        m_Texture: {fileID: 2800000, guid: db2f45e328706de41859c2eadef0b468, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - first:
+        name: _Tex_Mouth
+      second:
+        m_Texture: {fileID: 2800000, guid: f1f3198a2f1f2774382486deb9c0716c, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - first:
+        name: _diffuse
+      second:
+        m_Texture: {fileID: 2800000, guid: 0969f04a33223af4e8db28ce7e30beba, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - first:
+        name: _diffuseTex
+      second:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - first:
+        name: _eyesTex
+      second:
+        m_Texture: {fileID: 2800000, guid: dd3089c7d76a0804f91b375d91bfd19e, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - first:
+        name: _maskTex
+      second:
+        m_Texture: {fileID: 2800000, guid: 218ec1cafe23a074f802ce4f22ad6d61, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - first:
+        name: _matCapMetalToon
+      second:
+        m_Texture: {fileID: 2800000, guid: db0f677ad0fad4b978297744f660daf9, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - first:
+        name: _matCapToon
+      second:
+        m_Texture: {fileID: 2800000, guid: d5c128f91430b314b8015ec245cd0ba6, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - first:
+        name: _matMetal
+      second:
+        m_Texture: {fileID: 2800000, guid: f4bbe4dc874cf7f448a12bcd4e1acba4, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - first:
+        name: _matToon
+      second:
+        m_Texture: {fileID: 2800000, guid: 8be57ed89110c484d91591ec2f79bff5, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - first:
+        name: _matcapMetal
+      second:
+        m_Texture: {fileID: 2800000, guid: ced8cc17c25fe9047bd35cf440d84e75, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - first:
+        name: _matcapMetalAndToon
+      second:
+        m_Texture: {fileID: 2800000, guid: db0f677ad0fad4b978297744f660daf9, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - first:
+        name: _matcapToon
+      second:
+        m_Texture: {fileID: 2800000, guid: db0f677ad0fad4b978297744f660daf9, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - first:
+        name: _mouthTex
+      second:
+        m_Texture: {fileID: 2800000, guid: 33781d0e9ed25284198d23f6756c562b, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - first:
+        name: _node_3375
+      second:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - first:
+        name: _node_5824
+      second:
+        m_Texture: {fileID: 2800000, guid: 23740055e2b119e40a939138ab8070f8, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - first:
+        name: _normalTex
+      second:
+        m_Texture: {fileID: 2800000, guid: e9188aa9a535fa04185ec04edbe376fb, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Floats:
+    - first:
+        name: _MatrixWidth
+      second: 4
+    - first:
+        name: _Metal_power
+      second: 0.8
+    - first:
+        name: _Outline_Width
+      second: 1
+    - first:
+        name: _Threshold
+      second: 1
+    - first:
+        name: _UV_Time
+      second: 0.2
+    - first:
+        name: _node_5543
+      second: 0
+    m_Colors:
+    - first:
+        name: _Emissive_Color
+      second: {r: 0, g: 4, b: 2.2, a: 0}
+    - first:
+        name: _Outline_Color
+      second: {r: 0.13235295, g: 0.13235295, b: 0.13235295, a: 1}

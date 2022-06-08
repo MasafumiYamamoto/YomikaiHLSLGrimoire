@@ -1,0 +1,102 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 6
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_Name: M_00100_anathema_H_WPN
+  m_Shader: {fileID: 4800000, guid: a45fcbc887172455389cd14ca7764fa7, type: 3}
+  m_ShaderKeywords: 
+  m_LightmapFlags: 5
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - _Emissive_MSK:
+        m_Texture: {fileID: 2800000, guid: 128bfcb28acffc046bee2c35bd8d2a6e, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Gradation:
+        m_Texture: {fileID: 2800000, guid: 83ab6206659e9db4fa1479359ce61d0d, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _MatrixTex:
+        m_Texture: {fileID: 2800000, guid: 85c0ae3f3865845aeae4a9aca6915d4e, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _TEX_Eyes:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Tex_Mouth:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _diffuse:
+        m_Texture: {fileID: 2800000, guid: cdecf4e11bf04ae4fa2ea717e7751940, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _diffuseTex:
+        m_Texture: {fileID: 2800000, guid: b73dc2139db798b4e885a85a102c88b9, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _eyesTex:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _maskTex:
+        m_Texture: {fileID: 2800000, guid: 0f96b661ffaa8f14d8009e7b0d3e1e66, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _matCapMetalToon:
+        m_Texture: {fileID: 2800000, guid: db0f677ad0fad4b978297744f660daf9, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _matCapToon:
+        m_Texture: {fileID: 2800000, guid: d5c128f91430b314b8015ec245cd0ba6, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _matMetal:
+        m_Texture: {fileID: 2800000, guid: ced8cc17c25fe9047bd35cf440d84e75, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _matToon:
+        m_Texture: {fileID: 2800000, guid: 8be57ed89110c484d91591ec2f79bff5, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _matcapMetal:
+        m_Texture: {fileID: 2800000, guid: ced8cc17c25fe9047bd35cf440d84e75, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _mouthTex:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _node_3375:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _node_5824:
+        m_Texture: {fileID: 2800000, guid: 23740055e2b119e40a939138ab8070f8, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _normalTex:
+        m_Texture: {fileID: 2800000, guid: 3fab9df290a4ea34e9d5306318c228fd, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Floats:
+    - _MatrixWidth: 4
+    - _Metal_power: 0.8
+    - _Outline_Width: 1
+    - _Threshold: 1
+    - _UV_Time: 0.2
+    - _node_5543: 0
+    m_Colors:
+    - _Emissive_Color: {r: 0, g: 4, b: 2.2, a: 0}
+    - _Outline_Color: {r: 0.13235295, g: 0.13235295, b: 0.13235295, a: 1}
