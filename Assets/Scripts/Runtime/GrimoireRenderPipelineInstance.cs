@@ -29,6 +29,9 @@ namespace Runtime
                 
                 // 現在のレンダーターゲットを消去するコマンドを作成してスケジューリングします
                 ClearRenderTarget(context, camera);
+                
+                // ライトの設定
+                SetLightShaderParam(context, ref cullingResults);
 
                 // LightModeパスタグの値を利用して、Unityに描画するジオメトリを支持する
                 var shaderTagId = new ShaderTagId("ExampleLightModeTag");
@@ -64,6 +67,23 @@ namespace Runtime
             cmd.ClearRenderTarget((clearFlags & CameraClearFlags.Depth) != 0, (clearFlags & CameraClearFlags.Color) != 0, camera.backgroundColor);
             context.ExecuteCommandBuffer(cmd);
             CommandBufferPool.Release(cmd);
+        }
+
+        private void SetLightShaderParam(ScriptableRenderContext context, ref CullingResults cullingResults)
+        {
+            foreach (var light in cullingResults.visibleLights)
+            {
+                if (light.lightType == LightType.Directional)
+                {
+                    var mainLight = light.light;
+                    var cmd = CommandBufferPool.Get();
+                    cmd.SetGlobalVector(Shader.PropertyToID("_LightDirection"), mainLight.transform.forward.normalized);
+                    cmd.SetGlobalVector(Shader.PropertyToID("_LightColor"), mainLight.color);
+                    context.ExecuteCommandBuffer(cmd);
+                    CommandBufferPool.Release(cmd);
+                    return;
+                }
+            }
         }
     }
 }
