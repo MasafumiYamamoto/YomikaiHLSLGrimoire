@@ -16,17 +16,21 @@ Shader "Examples/CharacterShader2"
 
             float4x4 unity_MatrixVP;
             float4x4 unity_ObjectToWorld;
+            float4 _LightDirection;
+            float4 _LightColor;
 
             struct appData
             {
                 float4 vertex : POSITION;
                 float2 uv : TEXCOORD0;
+                float4 normal : NORMAL;
             };
 
             struct v2f
             {
                 float2 uv : TEXCOORD0;
                 float4 vertex : SV_POSITION;
+                float4 normal : NORMAL;
             };
 
             sampler2D _MainTex;
@@ -37,12 +41,13 @@ Shader "Examples/CharacterShader2"
                 const float4 worldPos = mul(unity_ObjectToWorld, i.vertex);
                 o.vertex = mul(unity_MatrixVP, worldPos);
                 o.uv = i.uv;
+                o.normal = mul(unity_ObjectToWorld, i.normal);
                 return o;
             }
 
-            float4 frag (v2f i) : SV_Target
+            float3 frag (v2f i) : SV_Target
             {
-                return tex2D(_MainTex, i.uv);
+                return tex2D(_MainTex, i.uv) * _LightColor * max(0.0f, dot(i.normal, _LightDirection) * -1.0f);
             }
             ENDHLSL
         }
