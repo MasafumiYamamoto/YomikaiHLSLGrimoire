@@ -48,11 +48,9 @@ namespace Runtime
             // 現在のカメラに基づいて、ビルトインのシェーダ変数の値を更新
             context.SetupCameraProperties(camera);
 
-            var clearFlags = camera.clearFlags;
             var cmd = CommandBufferPool.Get("Camera Buffer");
-            cmd.ClearRenderTarget((clearFlags & CameraClearFlags.Depth) != 0,
-                (clearFlags & CameraClearFlags.Color) != 0,
-                camera.backgroundColor);
+            var clearFlag = GetCameraClearFlag(camera);
+            CoreUtils.ClearRenderTarget(cmd, clearFlag, camera.backgroundColor);
             context.ExecuteCommandBuffer(cmd);
             cmd.Release();
 
@@ -80,6 +78,24 @@ namespace Runtime
             context.Submit();
 
             EndCameraRendering(context, camera);
+        }
+        
+        /// <summary>
+        /// UniversalRenderPipeline.GetCameraClearFlag()を参考にしつつ、CameraDataを1から作るのが面倒なのでよしなに処理してしまう
+        /// </summary>
+        /// <param name="camera"></param>
+        /// <returns></returns>
+        private ClearFlag GetCameraClearFlag(Camera camera)
+        {
+            var cameraClearFlags = camera.clearFlags;
+
+            return cameraClearFlags switch
+            {
+                // XRTODO: remove once we have visible area of occlusion mesh available
+                CameraClearFlags.Skybox when RenderSettings.skybox != null => ClearFlag.All,
+                CameraClearFlags.Nothing => ClearFlag.DepthStencil,
+                _ => ClearFlag.All
+            };
         }
     }
 }
