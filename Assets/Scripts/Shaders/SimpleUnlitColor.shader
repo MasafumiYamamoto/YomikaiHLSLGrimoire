@@ -47,7 +47,6 @@ Shader "Examples/SimpleUnlitColor"
                 float4 positionWS : TEXCOORD0;
                 float3 normalWS : NORMAL;
                 float3 viewDir : TEXCOORD1;
-                float3 lightDir : TEXCOORD2;
             };
 
             Varyings vert(const Attributes input)
@@ -57,7 +56,6 @@ Shader "Examples/SimpleUnlitColor"
                 output.positionCS = mul(unity_MatrixVP, output.positionWS);
                 output.normalWS = normalize(mul((float3x3)unity_ObjectToWorld, input.normalOS));
                 output.viewDir = normalize(_WorldSpaceCameraPos - output.positionWS);
-                output.lightDir = -_WorldSpaceLightPos0;
                 return output;
             }
 
@@ -73,7 +71,7 @@ Shader "Examples/SimpleUnlitColor"
 
             float3 Specular(const Varyings input)
             {
-                const float3 reflectVec = reflect(input.lightDir, input.normalWS);
+                const float3 reflectVec = reflect(-_WorldSpaceLightPos0, input.normalWS);
                 float power = max(0, dot(input.viewDir, reflectVec));
                 power = pow(power, _ReflectSharpness);
                 
