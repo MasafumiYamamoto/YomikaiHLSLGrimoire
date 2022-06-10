@@ -73,7 +73,7 @@ Shader "Examples/SimpleUnlitColor"
 
             float3 Reflect(const Varyings input)
             {
-                const float3 reflectVec = normalize(input.lightDir + 2 * dot(input.normalWS, -input.lightDir) * input.normalWS);
+                const float3 reflectVec = reflect(input.lightDir, input.normalWS);
                 float power = max(0, dot(input.viewDir, reflectVec));
                 power = pow(power, _ReflectSharpness);
                 
@@ -84,10 +84,10 @@ Shader "Examples/SimpleUnlitColor"
             {
                 float4 color = _Color;
                 
-                const float3 diffuse = Diffuse(input.normalWS);
-                const float3 reflect = Reflect(input);
+                const float3 diffuseColor = Diffuse(input.normalWS);
+                const float3 reflectColor = Reflect(input);
 
-                const float3 lightColor = diffuse + reflect + _AmbientColor;
+                const float3 lightColor = diffuseColor + reflectColor + _AmbientColor;
 
                 color.rgb *= lightColor;
                 return color;
