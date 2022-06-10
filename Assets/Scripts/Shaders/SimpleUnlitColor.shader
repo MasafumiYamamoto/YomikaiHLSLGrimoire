@@ -71,7 +71,7 @@ Shader "Examples/SimpleUnlitColor"
                 return _AmbientColor;
             }
 
-            float3 Reflect(const Varyings input)
+            float3 Specular(const Varyings input)
             {
                 const float3 reflectVec = reflect(input.lightDir, input.normalWS);
                 float power = max(0, dot(input.viewDir, reflectVec));
@@ -85,7 +85,7 @@ Shader "Examples/SimpleUnlitColor"
                 float4 color = _Color;
                 
                 const float3 diffuseColor = Diffuse(input.normalWS);
-                const float3 reflectColor = Reflect(input);
+                const float3 reflectColor = Specular(input);
 
                 const float3 lightColor = diffuseColor + reflectColor + _AmbientColor;
 
