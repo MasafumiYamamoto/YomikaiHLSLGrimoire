@@ -55,13 +55,13 @@ Shader "Examples/SimpleUnlitColor"
                 output.positionWS = mul(unity_ObjectToWorld, input.positionOS);
                 output.positionCS = mul(unity_MatrixVP, output.positionWS);
                 output.normalWS = normalize(mul((float3x3)unity_ObjectToWorld, input.normalOS));
-                output.viewDir = normalize(_WorldSpaceCameraPos - output.positionWS);
+                output.viewDir = normalize(_WorldSpaceCameraPos - output.positionWS.xyz);
                 return output;
             }
 
             float3 Diffuse(const float3 normal)
             {
-                return max(0, dot(normal, _WorldSpaceLightPos0)) * _LightColor0;
+                return max(0, dot(normal, _WorldSpaceLightPos0.xyz)) * _LightColor0.rgb;
             }
 
             float4 Ambient()
@@ -71,11 +71,11 @@ Shader "Examples/SimpleUnlitColor"
 
             float3 Specular(const Varyings input)
             {
-                const float3 reflectVec = reflect(-_WorldSpaceLightPos0, input.normalWS);
+                const float3 reflectVec = reflect(-_WorldSpaceLightPos0.xyz, input.normalWS);
                 float power = max(0, dot(input.viewDir, reflectVec));
                 power = pow(power, _ReflectSharpness);
                 
-                return power * _LightColor0;
+                return power * _LightColor0.xyz;
             }
 
             float4 frag(const Varyings input) : SV_Target
@@ -85,7 +85,7 @@ Shader "Examples/SimpleUnlitColor"
                 const float3 diffuseColor = Diffuse(input.normalWS);
                 const float3 reflectColor = Specular(input);
 
-                const float3 lightColor = diffuseColor + reflectColor + _AmbientColor;
+                const float3 lightColor = diffuseColor + reflectColor + _AmbientColor.rgb;
 
                 color.rgb *= lightColor;
                 return color;
