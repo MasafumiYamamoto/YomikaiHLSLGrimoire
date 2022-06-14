@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 using UnityEngine.Rendering;
+using UnityEngine.Rendering.Universal;
 
 namespace Runtime
 {
@@ -45,6 +46,10 @@ namespace Runtime
             // カリングパラメータを使ってカリング操作を行い、結果を保存
             var cullingResults = context.Cull(ref cullingParameters);
 
+            // ライト情報の初期化
+            var lighting = new GrimoireLight();
+            lighting.Setup(context, cullingResults);
+            
             // 現在のカメラに基づいて、ビルトインのシェーダ変数の値を更新
             context.SetupCameraProperties(camera);
 
@@ -96,6 +101,15 @@ namespace Runtime
                 CameraClearFlags.Nothing => ClearFlag.DepthStencil,
                 _ => ClearFlag.All
             };
+        }
+
+        /// <summary>
+        /// CameraからCameraDataの初期化を行う
+        /// </summary>
+        static void InitializeCameraData(Camera camera, out CameraData cameraData)
+        {
+            cameraData = new CameraData();
+            cameraData.camera = camera;
         }
     }
 }

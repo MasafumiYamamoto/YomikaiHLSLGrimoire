@@ -35,6 +35,10 @@ Shader "Examples/Chapter5"
             // ワールド空間でのカメラ位置    
             float3 _WorldSpaceCameraPos;
 
+            // 追加のDirectionalLight
+            float4 _AdditionalDirectionalLightColors[4];
+            float4 _AdditionalDirectionalLightDirections[4];
+
             //
             float4 _PointLightColor;
             float3 _PointLightPos;
