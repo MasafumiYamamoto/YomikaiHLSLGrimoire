@@ -1,7 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
 using UnityEngine;
 using UnityEngine.Rendering;
-using UnityEngine.Rendering.Universal.Internal;
 
 namespace Runtime
 {
@@ -9,22 +8,51 @@ namespace Runtime
     {
         private const string BufferName = "Lighting";
         private const int MaxDirectionalLightCount = 4;
-        
-        private CullingResults _cullingResults;
 
-        private static readonly Vector4[] DirectionalLightColors = new Vector4[MaxDirectionalLightCount];
-        private static readonly Vector4[] DirectionalLightDirections = new Vector4[MaxDirectionalLightCount];
+        /// <summary>
+        ///     フレーム中で存在する非Directionalライトの数
+        /// </summary>
+        private const int MaxOtherLightCount = 64;
 
-        private static readonly int AdditionalDirectionalLightCountId = Shader.PropertyToID("_AdditionalDirectionalLightCount");
-        private static readonly int AdditionalDirectionalLightColorsId = Shader.PropertyToID("_AdditionalDirectionalLightColors");
+        /// <summary>
+        ///     サンライト以外の平行光源設定
+        /// </summary>
+        private static readonly Vector4[] AdditionalDirectionalLightColors = new Vector4[MaxDirectionalLightCount];
+
+        private static readonly Vector4[] AdditionalDirectionalLightDirections = new Vector4[MaxDirectionalLightCount];
+
+        private static readonly int AdditionalDirectionalLightCountId =
+            Shader.PropertyToID("_AdditionalDirectionalLightCount");
+
+        private static readonly int AdditionalDirectionalLightColorsId =
+            Shader.PropertyToID("_AdditionalDirectionalLightColors");
+
         private static readonly int AdditionalDirectionalLightDirectionsId =
             Shader.PropertyToID("_AdditionalDirectionalLightDirections");
-        
-        private readonly CommandBuffer _buffer = new CommandBuffer()
+
+        /// <summary>
+        ///     非平行光源設定
+        /// </summary>
+        private static readonly int OtherLightCountId = Shader.PropertyToID("_OtherLightCount");
+
+        private static readonly int OtherLightColorsId = Shader.PropertyToID("_OtherLightColors");
+        private static readonly int OtherLightPositionsId = Shader.PropertyToID("_OtherLightPositions");
+
+
+        private static readonly Vector4[] OtherLightColors = new Vector4[MaxOtherLightCount];
+
+        /// <summary>
+        ///     WにRangeを入れている
+        /// </summary>
+        private static readonly Vector4[] OtherLightPositions = new Vector4[MaxOtherLightCount];
+
+        private readonly CommandBuffer _buffer = new()
         {
             name = BufferName
         };
-        
+
+        private CullingResults _cullingResults;
+
         public void Setup(ScriptableRenderContext context, CullingResults cullingResults)
         {
             _cullingResults = cullingResults;
@@ -36,40 +64,73 @@ namespace Runtime
         }
 
         /// <summary>
-        /// シーン中のライト情報を設定する
+        ///     シーン中のライト情報を設定する
         /// </summary>
         private void SetupLights()
         {
             var visibleLights = _cullingResults.visibleLights;
             var additionalDirectionalLightCount = 0;
+            var otherLightCount = 0;
             for (var i = 0; i < visibleLights.Length; i++)
             {
                 var visibleLight = visibleLights[i];
-                if (visibleLight.lightType == LightType.Directional)
+                switch (visibleLight.lightType)
                 {
-                    if (visibleLight.light == RenderSettings.sun)
-                    {
-                        // サンライトは別枠で計算してあるので除外
-                        continue;
-                    }
-                    SetupDirectionalLight(additionalDirectionalLightCount++, ref visibleLight);
-                    if (additionalDirectionalLightCount>= MaxDirectionalLightCount)
-                    {
+                    case LightType.Spot:
                         break;
-                    }
+                    case LightType.Directional:
+                        if (visibleLight.light == RenderSettings.sun)
+                            // サンライトは別枠で計算してあるので除外
+                            continue;
+                        if (additionalDirectionalLightCount < MaxDirectionalLightCount)
+                            SetupDirectionalLight(additionalDirectionalLightCount++, ref visibleLight);
+                        break;
+                    case LightType.Point:
+                        if (otherLightCount < MaxOtherLightCount) SetupOtherLight(otherLightCount++, ref visibleLight);
+                        break;
+                    case LightType.Area:
+                        break;
+                    case LightType.Disc:
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
                 }
             }
 
             // 求めたライト情報をシェーダに送る
             _buffer.SetGlobalInt(AdditionalDirectionalLightCountId, additionalDirectionalLightCount);
-            _buffer.SetGlobalVectorArray(AdditionalDirectionalLightColorsId, DirectionalLightColors);
-            _buffer.SetGlobalVectorArray(AdditionalDirectionalLightDirectionsId, DirectionalLightDirections);
+            if (additionalDirectionalLightCount > 0)
+            {
+                _buffer.SetGlobalVectorArray(AdditionalDirectionalLightColorsId, AdditionalDirectionalLightColors);
+                _buffer.SetGlobalVectorArray(AdditionalDirectionalLightDirectionsId,
+                    AdditionalDirectionalLightDirections);
+            }
+
+            _buffer.SetGlobalInt(OtherLightCountId, otherLightCount);
+            if (otherLightCount > 0)
+            {
+                _buffer.SetGlobalVectorArray(OtherLightColorsId, OtherLightColors);
+                _buffer.SetGlobalVectorArray(OtherLightPositionsId, OtherLightPositions);
+            }
         }
 
         private static void SetupDirectionalLight(int index, ref VisibleLight visibleLight)
         {
-            DirectionalLightColors[index] = visibleLight.light.color;
-            DirectionalLightDirections[index] = -visibleLight.localToWorldMatrix.GetColumn(2);
+            AdditionalDirectionalLightColors[index] = visibleLight.light.color;
+            AdditionalDirectionalLightDirections[index] = -visibleLight.localToWorldMatrix.GetColumn(2);
+        }
+
+        /// <summary>
+        ///     非平行光源の初期化
+        /// </summary>
+        /// <param name="index"></param>
+        /// <param name="visibleLight"></param>
+        private static void SetupOtherLight(int index, ref VisibleLight visibleLight)
+        {
+            OtherLightColors[index] = visibleLight.light.color;
+            var position = visibleLight.localToWorldMatrix.GetColumn(3);
+            position.w = visibleLight.range;
+            OtherLightPositions[index] = position;
         }
     }
 }

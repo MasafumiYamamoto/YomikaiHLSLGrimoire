@@ -36,13 +36,26 @@ Shader "Examples/Chapter5"
             float3 _WorldSpaceCameraPos;
 
             // 追加のDirectionalLight
+            #define MaxAdditionalDirectionalLightCount = 4;
+            int _AdditionalDirectionalLightCount;
             float4 _AdditionalDirectionalLightColors[4];
             float4 _AdditionalDirectionalLightDirections[4];
 
+            // 非平行光源
+            #define MaxOtherLightCount = 64;
+            int _OtherLightCount;
+            float4 _OtherLightColors[64];
+            float4 _OtherLightPositions[64];
+            
             //
             float4 _PointLightColor;
             float3 _PointLightPos;
             float _PointLightRange;
+
+            int GetOtherLightCount()
+            {
+                return _OtherLightCount;
+            }
 
             struct Attributes
             {
@@ -87,25 +100,25 @@ Shader "Examples/Chapter5"
                 return power * _LightColor0.xyz;
             }
 
-            float3 PointDiffuse(const float3 pos, const float3 normal)
+            float3 PointDiffuse(const float3 pos, const float3 normal, const int j)
             {
-                const float3 direction = _PointLightPos - pos;
-                const float attenuation = max(0, 1 - 1/_PointLightRange*length(direction));
+                const float3 direction = _OtherLightPositions[j] - pos;
+                const float attenuation = max(0, 1 - 1/_OtherLightPositions[j].w*length(direction));
                 const float3 lightVec = normalize(direction);
-                return max(0, dot(lightVec, normal)) * attenuation *  _PointLightColor.rgb;
+                return max(0, dot(lightVec, normal)) * attenuation *  _OtherLightColors[j].rgb;
             }
 
-            float3 PointSpecular(const Varyings input)
+            float3 PointSpecular(const Varyings input, const int j)
             {
-                const float3 direction = _PointLightPos - input.positionWS;
-                const float attenuation = max(0, 1 - 1/_PointLightRange*length(direction));
+                const float3 direction = _OtherLightPositions[j] - input.positionWS;
+                const float attenuation = max(0, 1 - 1/_OtherLightPositions[j].w*length(direction));
                 const float3 reflectVec = reflect(-normalize(direction), input.normalWS);
                 float power = max(0, dot(input.viewDir, reflectVec));
 
                 power *= attenuation;
                 power = pow(power, _ReflectSharpness);
 
-                return power * _PointLightColor.rgb;
+                return power * _OtherLightColors[j].rgb;
             }
 
             float4 frag(const Varyings input) : SV_Target
@@ -117,8 +130,13 @@ Shader "Examples/Chapter5"
                 const float3 directionalSpecularColor = DirectionalSpecular(input);
 
                 // PointLightの影響計算
-                const float3 pointDiffuseColor = PointDiffuse(input.positionWS, input.normalWS);
-                const float3 pointSpecularColor = PointSpecular(input);
+                float3 pointDiffuseColor = 0;
+                float3 pointSpecularColor = 0;
+                for (int j = 0; j < GetOtherLightCount(); j++)
+                {
+                    pointDiffuseColor += PointDiffuse(input.positionWS, input.normalWS, j);
+                    pointSpecularColor += PointSpecular(input, j);
+                }
 
                 // 最終的なライトの影響計算
                 const float3 totalDiffuseColor = directionalDiffuseColor + pointDiffuseColor;
