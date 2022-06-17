@@ -37,6 +37,7 @@ namespace Runtime
 
         private static readonly int OtherLightColorsId = Shader.PropertyToID("_OtherLightColors");
         private static readonly int OtherLightPositionsId = Shader.PropertyToID("_OtherLightPositions");
+        private static readonly int OtherLightDirectionsId = Shader.PropertyToID("_OtherLightDirections");
 
 
         private static readonly Vector4[] OtherLightColors = new Vector4[MaxOtherLightCount];
@@ -45,6 +46,8 @@ namespace Runtime
         ///     WにRangeを入れている
         /// </summary>
         private static readonly Vector4[] OtherLightPositions = new Vector4[MaxOtherLightCount];
+
+        private static readonly Vector4[] OtherLightDirections = new Vector4[MaxOtherLightCount];
 
         private readonly CommandBuffer _buffer = new()
         {
@@ -77,6 +80,7 @@ namespace Runtime
                 switch (visibleLight.lightType)
                 {
                     case LightType.Spot:
+                        if (otherLightCount < MaxOtherLightCount) SetupSpotLight(otherLightCount++, ref visibleLight);
                         break;
                     case LightType.Directional:
                         if (visibleLight.light == RenderSettings.sun)
@@ -86,7 +90,7 @@ namespace Runtime
                             SetupDirectionalLight(additionalDirectionalLightCount++, ref visibleLight);
                         break;
                     case LightType.Point:
-                        if (otherLightCount < MaxOtherLightCount) SetupOtherLight(otherLightCount++, ref visibleLight);
+                        if (otherLightCount < MaxOtherLightCount) SetupPointLight(otherLightCount++, ref visibleLight);
                         break;
                     case LightType.Area:
                         break;
@@ -111,6 +115,7 @@ namespace Runtime
             {
                 _buffer.SetGlobalVectorArray(OtherLightColorsId, OtherLightColors);
                 _buffer.SetGlobalVectorArray(OtherLightPositionsId, OtherLightPositions);
+                _buffer.SetGlobalVectorArray(OtherLightDirectionsId, OtherLightDirections);
             }
         }
 
@@ -121,16 +126,29 @@ namespace Runtime
         }
 
         /// <summary>
-        ///     非平行光源の初期化
+        ///     点光源の初期化
         /// </summary>
         /// <param name="index"></param>
         /// <param name="visibleLight"></param>
-        private static void SetupOtherLight(int index, ref VisibleLight visibleLight)
+        private static void SetupPointLight(int index, ref VisibleLight visibleLight)
         {
             OtherLightColors[index] = visibleLight.light.color;
             var position = visibleLight.localToWorldMatrix.GetColumn(3);
             position.w = visibleLight.range;
             OtherLightPositions[index] = position;
+        }
+
+        /// <summary>
+        ///     スポットライトの初期化
+        /// </summary>
+        /// <param name="index"></param>
+        /// <param name="visibleLight"></param>
+        private static void SetupSpotLight(int index, ref VisibleLight visibleLight)
+        {
+            SetupPointLight(index, ref visibleLight);
+            var direction = -visibleLight.localToWorldMatrix.GetColumn(2);
+            direction.w = visibleLight.light.spotAngle;
+            OtherLightDirections[index] = direction;
         }
     }
 }

@@ -42,15 +42,11 @@ Shader "Examples/Chapter5"
             float4 _AdditionalDirectionalLightDirections[4];
 
             // 非平行光源
-            #define MaxOtherLightCount = 64;
+            #define MAX_OTHER_LIGHT_COUNT = 64;
             int _OtherLightCount;
             float4 _OtherLightColors[64];
             float4 _OtherLightPositions[64];
-            
-            //
-            float4 _PointLightColor;
-            float3 _PointLightPos;
-            float _PointLightRange;
+            float4 _OtherLightDirections[64];
 
             int GetOtherLightCount()
             {
@@ -100,22 +96,43 @@ Shader "Examples/Chapter5"
                 return power * _LightColor0.xyz;
             }
 
-            float3 PointDiffuse(const float3 pos, const float3 normal, const int j)
+            float3 OtherLightDiffuse(const float3 pos, const float3 normal, const int j)
             {
-                const float3 direction = _OtherLightPositions[j] - pos;
-                const float attenuation = max(0, 1 - 1/_OtherLightPositions[j].w*length(direction));
+                const float3 direction = _OtherLightPositions[j].xyz - pos;
                 const float3 lightVec = normalize(direction);
-                return max(0, dot(lightVec, normal)) * attenuation *  _OtherLightColors[j].rgb;
+                const float distanceAttenuation = max(0, 1 - 1/_OtherLightPositions[j].w*length(direction));
+
+                float angleAttenuation = 1;
+                // Spot Angleが1以上の場合はスポットライトとして、角度による減衰を入れる
+                // 適切な分岐方法どうやるのかは気になるところ
+                if (_OtherLightDirections[j].w > 0)
+                {
+                    const float angle = abs(acos(dot(lightVec, _OtherLightDirections[j])));
+                    angleAttenuation = max(0, 1 - angle/radians(_OtherLightDirections[j].w/2));
+                }
+
+                return max(0, dot(lightVec, normal)) * distanceAttenuation * angleAttenuation  * _OtherLightColors[j].rgb;
             }
 
-            float3 PointSpecular(const Varyings input, const int j)
+            float3 OtherLightSpecular(const Varyings input, const int j)
             {
                 const float3 direction = _OtherLightPositions[j] - input.positionWS;
-                const float attenuation = max(0, 1 - 1/_OtherLightPositions[j].w*length(direction));
+                const float distanceAttenuation = max(0, 1 - 1/_OtherLightPositions[j].w*length(direction));
                 const float3 reflectVec = reflect(-normalize(direction), input.normalWS);
+                const float3 lightVec = normalize(direction);
                 float power = max(0, dot(input.viewDir, reflectVec));
 
-                power *= attenuation;
+                float angleAttenuation = 1;
+                // Spot Angleが1以上の場合はスポットライトとして、角度による減衰を入れる
+                // 適切な分岐方法どうやるのかは気になるところ
+                if (_OtherLightDirections[j].w > 0)
+                {
+                    const float angle = abs(acos(dot(lightVec, _OtherLightDirections[j])));
+                    angleAttenuation = max(0, 1 - angle/radians(_OtherLightDirections[j].w/2));
+                }
+
+                
+                power *= distanceAttenuation * angleAttenuation;
                 power = pow(power, _ReflectSharpness);
 
                 return power * _OtherLightColors[j].rgb;
@@ -134,8 +151,8 @@ Shader "Examples/Chapter5"
                 float3 pointSpecularColor = 0;
                 for (int j = 0; j < GetOtherLightCount(); j++)
                 {
-                    pointDiffuseColor += PointDiffuse(input.positionWS, input.normalWS, j);
-                    pointSpecularColor += PointSpecular(input, j);
+                    pointDiffuseColor += OtherLightDiffuse(input.positionWS, input.normalWS, j);
+                    pointSpecularColor += OtherLightSpecular(input, j);
                 }
 
                 // 最終的なライトの影響計算
