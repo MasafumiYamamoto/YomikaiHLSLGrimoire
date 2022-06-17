@@ -1,4 +1,4 @@
-Shader "Examples/CharacterShader2"
+Shader "Examples/CharacterShader3"
 {
     Properties
     {
@@ -19,6 +19,7 @@ Shader "Examples/CharacterShader2"
             float4 _LightPosition;
             float4 _LightDirection;
             float4 _LightColor;
+            float _LightRange;
             float3 _WorldSpaceCameraPos;
 
             struct app_data
@@ -38,6 +39,16 @@ Shader "Examples/CharacterShader2"
 
             sampler2D _MainTex;
 
+            float3 calcLambertDiffuse(float3 lightDir, float4 lightColor, float3 normal)
+            {
+                return lightColor * max(0.0f, dot(normal, lightDir) * -1.0f);
+            }
+
+            float3 calcPhongSpecular(float3 lightDir, float4 lightColor, float3 normal, float3 worldPos)
+            {
+                return lightColor * max(0.0f, dot(reflect(normal, lightDir), normalize(_WorldSpaceCameraPos - worldPos)));
+            }
+
             v2f vert (app_data i)
             {
                 v2f o;
@@ -50,13 +61,14 @@ Shader "Examples/CharacterShader2"
 
             float3 frag (v2f i) : SV_Target
             {
-                const float3 diffuse_light = _LightColor * max(0.0f, dot(i.normal, _LightDirection) * -1.0f);
-                const float3 specular_light = _LightColor * max(0.0f, dot(reflect(i.normal, _LightDirection), normalize(_WorldSpaceCameraPos - i.vertex_ws)));
-                float3 light = diffuse_light + pow(specular_light, 5);
-                light.x += 0.2;
-                light.y += 0.2;
-                light.z += 0.2;
-                return tex2D(_MainTex, i.uv) * light;
+                const float3 lightDir = normalize(i.vertex_ws - _LightPosition);
+                const float3 diffPoint = calcLambertDiffuse(lightDir, _LightColor, i.normal);
+                const float3 specularPoint = calcPhongSpecular(lightDir, _LightColor, i.normal, i.vertex_ws);
+                const float distance = length(i.vertex_ws - _LightPosition);
+                float efficiency = max(0.0f, 1.0f - 1.0f / _LightRange * distance);
+                efficiency = pow(efficiency, 2.0f);
+                
+                return tex2D(_MainTex, i.uv) * (diffPoint * efficiency + specularPoint * efficiency);
             }
             ENDHLSL
         }

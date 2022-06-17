@@ -83,6 +83,16 @@ namespace Runtime
                     CommandBufferPool.Release(cmd);
                     return;
                 }
+                if (light.lightType == LightType.Point)
+                {
+                    var mainLight = light.light;
+                    var cmd = CommandBufferPool.Get();
+                    cmd.SetGlobalVector(Shader.PropertyToID("_LightPosition"), mainLight.transform.position);
+                    cmd.SetGlobalVector(Shader.PropertyToID("_LightColor"), mainLight.color);
+                    cmd.SetGlobalFloat(Shader.PropertyToID("_LightRange"), mainLight.range);
+                    context.ExecuteCommandBuffer(cmd);
+                    CommandBufferPool.Release(cmd);
+                }
             }
         }
     }
