@@ -73,8 +73,18 @@ Shader "Examples/Chapter5"
                 output.positionWS = mul(unity_ObjectToWorld, input.positionOS);
                 output.positionCS = mul(unity_MatrixVP, output.positionWS);
                 output.normalWS = normalize(mul((float3x3)unity_ObjectToWorld, input.normalOS));
-                output.viewDir = normalize(_WorldSpaceCameraPos - output.positionWS.xyz);
+                output.viewDir = normalize(_WorldSpaceCameraPos.xyz - output.positionWS.xyz);
                 return output;
+            }
+
+            float3 RimEffect(const Varyings input, const float3 directionalLightDirection, const float3 lightColor)
+            {
+                const float directionalLightRimPower = 1 - max(0, dot(input.normalWS, directionalLightDirection));
+                const float eyeRimPower = 1 - max(0, dot(input.normalWS, input.viewDir));
+                float rimPower = directionalLightRimPower * eyeRimPower;
+                rimPower = pow(rimPower, 1.3);
+
+                return rimPower * lightColor;
             }
 
             float3 DirectionalDiffuse(const float3 normal)
@@ -146,6 +156,9 @@ Shader "Examples/Chapter5"
                 const float3 directionalDiffuseColor = DirectionalDiffuse(input.normalWS);
                 const float3 directionalSpecularColor = DirectionalSpecular(input);
 
+                // リムライトの影響計算
+                const float3 rimColor = RimEffect(input, _WorldSpaceLightPos0.xyz, _LightColor0.xyz);
+
                 // PointLightの影響計算
                 float3 pointDiffuseColor = 0;
                 float3 pointSpecularColor = 0;
@@ -156,10 +169,10 @@ Shader "Examples/Chapter5"
                 }
 
                 // 最終的なライトの影響計算
-                const float3 totalDiffuseColor = directionalDiffuseColor + pointDiffuseColor;
-                const float3 totalPointColor = directionalSpecularColor + pointSpecularColor;
+                const float3 totalDirectionalColor = directionalDiffuseColor + directionalSpecularColor + rimColor;
+                const float3 totalPointColor = pointDiffuseColor + pointSpecularColor;
                 
-                const float3 lightColor = totalDiffuseColor + totalPointColor + _AmbientColor.rgb;
+                const float3 lightColor = totalDirectionalColor + totalPointColor + _AmbientColor.rgb;
 
                 color.rgb *= lightColor;
                 return color;
