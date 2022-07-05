@@ -22,6 +22,10 @@ namespace Runtime
 
         protected override void Render(ScriptableRenderContext context, Camera[] cameras)
         {
+            SetupPerFrameShaderConstants();
+
+            SortCameras(cameras);
+
             // パイプラインに登録されている前処理
             BeginFrameRendering(context, cameras);
             GraphicsSettings.lightsUseLinearIntensity = QualitySettings.activeColorSpace == ColorSpace.Linear;
@@ -49,7 +53,7 @@ namespace Runtime
             // ライト情報の初期化
             var lighting = new GrimoireLight();
             lighting.Setup(context, cullingResults);
-            
+
             // 現在のカメラに基づいて、ビルトインのシェーダ変数の値を更新
             context.SetupCameraProperties(camera);
 
@@ -84,9 +88,20 @@ namespace Runtime
 
             EndCameraRendering(context, camera);
         }
-        
+
         /// <summary>
-        /// UniversalRenderPipeline.GetCameraClearFlag()を参考にしつつ、CameraDataを1から作るのが面倒なのでよしなに処理してしまう
+        ///     シェーダに依存しないパラメータの設定
+        /// </summary>
+        private static void SetupPerFrameShaderConstants()
+        {
+            // 環境光に必要なパラメータ設定
+            Shader.SetGlobalColor(Shader.PropertyToID("unity_AmbientSky"), RenderSettings.ambientSkyColor);
+            Shader.SetGlobalColor(Shader.PropertyToID("unity_AmbientEquator"), RenderSettings.ambientEquatorColor);
+            Shader.SetGlobalColor(Shader.PropertyToID("unity_AmbientGround"), RenderSettings.ambientGroundColor);
+        }
+
+        /// <summary>
+        ///     UniversalRenderPipeline.GetCameraClearFlag()を参考にしつつ、CameraDataを1から作るのが面倒なのでよしなに処理してしまう
         /// </summary>
         /// <param name="camera"></param>
         /// <returns></returns>
@@ -104,9 +119,9 @@ namespace Runtime
         }
 
         /// <summary>
-        /// CameraからCameraDataの初期化を行う
+        ///     CameraからCameraDataの初期化を行う
         /// </summary>
-        static void InitializeCameraData(Camera camera, out CameraData cameraData)
+        private static void InitializeCameraData(Camera camera, out CameraData cameraData)
         {
             cameraData = new CameraData();
             cameraData.camera = camera;

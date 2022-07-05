@@ -12,3 +12,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f9d1b8ed464b4b019dbb1e3f352980e4, type: 3}
   m_Name: GrimoireRenderPipelineAsset
   m_EditorClassIdentifier: 
+  useLightsPerObject: 1

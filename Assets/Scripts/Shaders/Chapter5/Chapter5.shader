@@ -25,6 +25,9 @@ Shader "Examples/Chapter5"
             float4x4 unity_WorldToObject;
             float4 _Color;
             float4 _AmbientColor;
+            float3 unity_AmbientSky;
+            float3 unity_AmbientEquator;
+            float3 unity_AmbientGround;
             int _ReflectSharpness;
 
             // SunLightの位置
@@ -90,6 +93,12 @@ Shader "Examples/Chapter5"
             float3 DirectionalDiffuse(const float3 normal)
             {
                 return max(0, dot(normal, _WorldSpaceLightPos0.xyz)) * _LightColor0.rgb;
+            }
+
+            float3 HemisphereAmbient(const float3 vertexNormal, const float3 groundNormal, const float3 skyColor, const float3 equatorColor, const float3 groundColor)
+            {
+                float t = dot(vertexNormal, groundNormal);
+                return lerp(groundColor, lerp(equatorColor, skyColor, t), t+1);
             }
 
             float4 Ambient()
@@ -168,11 +177,14 @@ Shader "Examples/Chapter5"
                     pointSpecularColor += OtherLightSpecular(input, j);
                 }
 
+                // Ambientの影響計算
+                const float3 ambientColor = HemisphereAmbient(input.normalWS, float3(0,1,0), unity_AmbientSky, unity_AmbientEquator, unity_AmbientGround);
+
                 // 最終的なライトの影響計算
                 const float3 totalDirectionalColor = directionalDiffuseColor + directionalSpecularColor + rimColor;
                 const float3 totalPointColor = pointDiffuseColor + pointSpecularColor;
                 
-                const float3 lightColor = totalDirectionalColor + totalPointColor + _AmbientColor.rgb;
+                const float3 lightColor = totalDirectionalColor + totalPointColor + ambientColor;
 
                 color.rgb *= lightColor;
                 return color;
