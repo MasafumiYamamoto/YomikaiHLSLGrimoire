@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 410087040}
-  m_IndirectSpecularColor: {r: 0.16629486, g: 0.19579478, b: 0.22469483, a: 1}
+  m_IndirectSpecularColor: {r: 0.000020689384, g: 0.00000009569228, b: 0, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -328,14 +328,14 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 410087039}
-  m_LocalRotation: {x: 0.058615353, y: 0.19924295, z: -0.041567665, w: 0.97731197}
+  m_LocalRotation: {x: 0.24935363, y: 0.89268166, z: 0.31059012, w: 0.21089354}
   m_LocalPosition: {x: 0, y: 3, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 1
-  m_LocalEulerAnglesHint: {x: 7.535, y: 22.825, z: -3.348}
+  m_LocalEulerAnglesHint: {x: -26.701, y: 143.498, z: 40.163}
 --- !u!114 &410087042
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -417,7 +417,7 @@ GameObject:
   - component: {fileID: 1784043631}
   - component: {fileID: 1784043630}
   m_Layer: 0
-  m_Name: NormalMap
+  m_Name: Chapter6
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

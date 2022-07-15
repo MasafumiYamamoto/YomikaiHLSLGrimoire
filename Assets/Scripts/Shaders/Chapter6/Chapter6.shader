@@ -2,8 +2,11 @@ Shader "Examples/Chapter6"
 {
     Properties
     {
-        _AlbedoMap("Albedo", 2D) = "white"
-        _NormalMap("Normal", 2D) = "blue"
+        _AlbedoMap("Albedo", 2D) = "white" {}
+        _NormalMap("Normal", 2D) = "blue" {}
+        _SpecularMap("Specular", 2D) = "gray" {}
+        _AOMap("AO", 2D) = "white" {}
+        _AmbientColor("Ambient", Color) = (0.2, 0.2, 0.2, 1)
     }
     
     SubShader
@@ -16,6 +19,9 @@ Shader "Examples/Chapter6"
 
             
             HLSLPROGRAM
+            #include "../Common/SpecularModule.hlsl"
+            #include "../Common/AmbientModule.hlsl"
+            
             #pragma vertex vert
             #pragma fragment frag
 
@@ -26,6 +32,9 @@ Shader "Examples/Chapter6"
             // 各種テクスチャ用の変数
             sampler2D _AlbedoMap;
             sampler2D _NormalMap;
+            sampler2D _SpecularMap;
+            sampler2D _AOMap;
+            float4 _AmbientColor;
 
             // SunLightの位置
             float4 _WorldSpaceLightPos0;
@@ -82,8 +91,15 @@ Shader "Examples/Chapter6"
                 // DirectionalLightの影響計算
                 const float3 directionalDiffuseColor = DirectionalDiffuse(worldNormal);
 
+                const float specularPower = tex2D(_SpecularMap, input.uv).r;
+                const float3 directionalSpecularColor = DirectionalSpecular(_WorldSpaceLightPos0.xyz,
+                    _LightColor0.xyz, input.viewDir, input.normalWS, 20) * specularPower;
+
+                const float ambientPower = tex2D(_AOMap, input.uv).r;
+                const float3 ambientColor = Ambient(_AmbientColor.xyz) * ambientPower;
+
                 // 最終的なライトの影響計算
-                const float3 totalDirectionalColor = directionalDiffuseColor;
+                const float3 totalDirectionalColor = directionalDiffuseColor + directionalSpecularColor + ambientColor;
                 
                 const float3 lightColor = totalDirectionalColor;
 
