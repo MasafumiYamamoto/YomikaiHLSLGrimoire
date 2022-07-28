@@ -49,7 +49,7 @@ Shader "Examples/Chapter6"
                 float4 positionOS : POSITION;
                 float3 normalOS : NORMAL;
                 float2 uv : TEXCOORD0;
-                float4 tangent : TANGENT;
+                float4 tangentOS : TANGENT;
             };
 
             struct Varyings
@@ -71,7 +71,7 @@ Shader "Examples/Chapter6"
                 output.positionCS = mul(unity_MatrixVP, output.positionWS);
                 output.normalWS = normalize(mul((float3x3)unity_ObjectToWorld, input.normalOS));
                 output.viewDir = normalize(_WorldSpaceCameraPos.xyz - output.positionWS.xyz);
-                output.tangentWS = normalize(mul((float3x3)unity_ObjectToWorld, input.tangent.xyz));
+                output.tangentWS = normalize(mul((float3x3)unity_ObjectToWorld, input.tangentOS.xyz));
                 output.biNormalWS = cross(output.normalWS, output.tangentWS);
                 return output;
             }
