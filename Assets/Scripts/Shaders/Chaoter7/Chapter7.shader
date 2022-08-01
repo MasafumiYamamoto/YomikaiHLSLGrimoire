@@ -46,7 +46,7 @@ Shader "Examples/Chapter7"
             // ワールド空間でのカメラ位置    
             // float3 _WorldSpaceCameraPos;
 
-            const float PI = 3.14159;
+            #define PI 3.14159
 
             struct Attributes
             {
@@ -101,10 +101,6 @@ Shader "Examples/Chapter7"
                     input.biNormalWS * localNormal.y +
                         input.normalWS * localNormal.z;
 
-                float4 col = 1;
-                col.rgb = worldNormal;
-                return col;
-                
                 // スペキュラカラーはベースカラーと同じにする
                 const float3 specularColor = baseColor.rgb;
 
@@ -119,13 +115,13 @@ Shader "Examples/Chapter7"
 
                 // 正規化Lambert拡散反射を求める
                 const float NdotL = saturate(dot(worldNormal, _WorldSpaceLightPos0));
-                const float3 lambertDiffuse =  _LightColor0 * NdotL / PI;
+                const float3 lambertDiffuse =  _LightColor0.xyz * NdotL / PI;
 
                 // 最終的な拡散反射を計算する
                 const float3 diffuse = baseColor * diffuseFromFresnel * lambertDiffuse;
 
                 float4 color = 1;
-                color.rgb = worldNormal;
+                color.rgb = diffuse;
                 
                 return color;
             }
