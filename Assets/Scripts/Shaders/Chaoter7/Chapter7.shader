@@ -5,7 +5,7 @@ Shader "Examples/Chapter7"
         _BaseMap("BaseColor", 2D) = "white" {}
         _NormalMap("Normal", 2D) = "blue" {}
         //_SubSurface("Subsurface", float) = 0.2
-        _MetallicMap("Metallic", float) = 0.2
+        _MetallicMap("Metallic", 2D) = "gray" {}
         _SmoothnessMap("Smoothness", 2D) = "white" {}
         //_SpecularMap("Specular", 2D) = "gray" {}
         //_SpecularTint("SpecularTint", Color) = (1,1,1,1)
@@ -26,6 +26,8 @@ Shader "Examples/Chapter7"
             #pragma fragment frag
 
             #include "unityCG.cginc"
+            #include "../Common/Constants.hlsl"
+            #include "../Common/CookTorrance.hlsl"
 
             // 各種テクスチャ用変数
             sampler2D _BaseMap;
@@ -45,8 +47,6 @@ Shader "Examples/Chapter7"
 
             // ワールド空間でのカメラ位置    
             // float3 _WorldSpaceCameraPos;
-
-            #define PI 3.14159
 
             struct Attributes
             {
@@ -88,7 +88,6 @@ Shader "Examples/Chapter7"
 
                 return dotNL*dotNV;
             }
-                
 
             float4 frag(const Varyings input) : SV_Target
             {
@@ -108,7 +107,7 @@ Shader "Examples/Chapter7"
                 const float metallic = tex2D(_MetallicMap, input.uv).r;
 
                 // なめらかさ
-                const float smoothness = tex2D(_SmoothnessMap, input.uv).r;
+                const float smoothness = 1 - tex2D(_SmoothnessMap, input.uv).r;
 
                 // フレネル反射を考慮した拡散反射計算
                 const float diffuseFromFresnel = CalcDiffuseFromFresnel(worldNormal, _WorldSpaceLightPos0, input.viewDir);
@@ -120,8 +119,12 @@ Shader "Examples/Chapter7"
                 // 最終的な拡散反射を計算する
                 const float3 diffuse = baseColor * diffuseFromFresnel * lambertDiffuse;
 
+                // Cook-Torranceモデルを利用した鏡面反射率計算
+                float3 specular = CookTorranceSpecular(_WorldSpaceLightPos0, input.viewDir, input.normalWS, smoothness) * _LightColor0.xyz;
+                specular *= lerp(1, specularColor, metallic);
+                
                 float4 color = 1;
-                color.rgb = diffuse;
+                color.rgb = diffuse * (1 - smoothness) + specular;
                 
                 return color;
             }
