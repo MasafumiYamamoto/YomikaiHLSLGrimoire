@@ -89,6 +89,34 @@ Shader "Examples/Chapter7"
                 return dotNL*dotNV;
             }
 
+            float CalcDisneyDiffuseFresnel(const float3 WorldNormal, const float3 surface2Light, const float3 toEye)
+            {
+                const float3 h = normalize(surface2Light + toEye);
+
+                // 粗さは0.5固定
+                const float roughness = 0.5;
+
+                const float energyBias = lerp(0.0f, 0.5f, roughness);
+                const float energyFactor = lerp(1, 1/1.51, roughness);
+
+                // 光源に向かうベクトルとハーフベクトルの類似度を求める
+                const float dotLH = saturate(dot(surface2Light, h));
+
+                // 光源に向かうベクトルをハーフベクトル,光が平行に入射した時の拡散反射量を求める
+                const float Fd90 = energyBias * 2.0 * dotLH * dotLH * roughness;
+
+                // 法線と光源に向かうベクトルｗを利用して拡散反射率を求める
+                const float dotNL = saturate(dot(WorldNormal, surface2Light));
+                const float FL = (1 + (Fd90 - 1) * pow(1 - dotNL, 5));
+
+                // 法線と視線に向かうベクトルを利用して拡散反射率を求める
+                const float dotNV = saturate(dot(WorldNormal, toEye));
+                const float FV = (1 + (Fd90 - 1) * pow(1 - dotNV, 5));
+
+                // 法線と光源への方向に依存する拡散反射率と、法線と視線ベクトルに依存する拡散反射率を乗算して最終的な拡散反射率を求める
+                return FV* FV * energyFactor;
+            }
+
             float4 frag(const Varyings input) : SV_Target
             {
                 // ベースカラー
@@ -110,7 +138,7 @@ Shader "Examples/Chapter7"
                 const float smoothness = 1 - tex2D(_SmoothnessMap, input.uv).r;
 
                 // フレネル反射を考慮した拡散反射計算
-                const float diffuseFromFresnel = CalcDiffuseFromFresnel(worldNormal, _WorldSpaceLightPos0, input.viewDir);
+                const float diffuseFromFresnel = CalcDisneyDiffuseFresnel(worldNormal, _WorldSpaceLightPos0, input.viewDir);
 
                 // 正規化Lambert拡散反射を求める
                 const float NdotL = saturate(dot(worldNormal, _WorldSpaceLightPos0));
