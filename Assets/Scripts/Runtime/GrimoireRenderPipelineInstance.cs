@@ -93,6 +93,20 @@ namespace Runtime
                     context.ExecuteCommandBuffer(cmd);
                     CommandBufferPool.Release(cmd);
                 }
+
+                if (light.lightType == LightType.Spot)
+                {
+                    var mainLight = light.light;
+                    var cmd = CommandBufferPool.Get();
+                    cmd.SetGlobalVector(Shader.PropertyToID("_LightPosition"), mainLight.transform.position);
+                    cmd.SetGlobalVector(Shader.PropertyToID("_LightDirection"), mainLight.transform.forward.normalized);
+                    cmd.SetGlobalVector(Shader.PropertyToID("_LightColor"), mainLight.color);
+                    cmd.SetGlobalFloat(Shader.PropertyToID("_LightIntensity"), mainLight.intensity);
+                    cmd.SetGlobalFloat(Shader.PropertyToID("_LightRange"), mainLight.range);
+                    cmd.SetGlobalFloat(Shader.PropertyToID("_LightSpotAngle"), mainLight.spotAngle);
+                    context.ExecuteCommandBuffer(cmd);
+                    CommandBufferPool.Release(cmd);
+                }
             }
         }
     }
